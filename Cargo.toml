@@ -1,6 +1,6 @@
 [package]
 name = "foukobot"
-version = "0.1.0-alpha.1"
+version = "0.1.1-alpha.1"
 edition = "2021"
 rust-version = "1.75"
 authors = ["Fouko <mail@fouko.xyz>"]
@@ -11,24 +11,34 @@ homepage = "https://bot.fouko.xyz"
 readme = "README.md"
 keywords = ["bot", "telegram", "discord", "chat", "foukoapi"]
 categories = ["command-line-utilities"]
-# FoukoBot is the reference application, not a library — users should
+# FoukoBot is the reference application, not a library - users should
 # deploy their own fork or use it as a template rather than depend on it.
 publish = false
 
 [dependencies]
 # FoukoApi is pulled straight from crates.io. If you want to hack on both
 # crates side-by-side, swap this line for a path dependency:
-#     foukoapi = { path = "../FoukoApi", features = ["telegram", "discord", "sqlite"] }
-foukoapi = { version = "0.1.0-alpha.1", features = ["telegram", "discord", "sqlite"] }
+#     foukoapi = { path = "../FoukoApi", features = ["telegram", "discord", "sqlite", "crypto"] }
+foukoapi = { version = "0.1.1-alpha.1", features = ["telegram", "discord", "sqlite", "crypto"] }
 
 tokio = { version = "1.40", features = ["full"] }
+futures = "0.3"
 tracing = "0.1"
-tracing-subscriber = { version = "0.3", features = ["env-filter"] }
+# "chrono" only enables the short-time terminal format; chrono itself is
+# already a direct dependency, so this pulls nothing new.
+tracing-subscriber = { version = "0.3", features = ["env-filter", "chrono"] }
+tracing-appender = "0.2"
 anyhow = "1"
 rand = "0.8"
 chrono = { version = "0.4", features = ["clock"] }
 reqwest = { version = "0.12", default-features = false, features = ["rustls-tls", "json"] }
+# rzhunemogu.ru answers in Windows-1251; this decodes it (already in the
+# tree via reqwest, so it costs nothing extra).
+encoding_rs = "0.8"
 serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+# grapheme-aware /reverse; tiny, no transitive deps
+unicode-segmentation = "1"
 
 [profile.release]
 lto = "thin"

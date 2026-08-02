@@ -1,0 +1,51 @@
+name: CI
+
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+
+env:
+  CARGO_TERM_COLOR: always
+  RUSTFLAGS: -D warnings
+
+jobs:
+  check:
+    name: fmt · clippy · test
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout bot
+        uses: actions/checkout@v4
+        with:
+          path: bot
+
+      # The bot depends on the published foukoapi crate. Until a release
+      # carries the latest API, build against the sibling repo via a Cargo
+      # patch so CI tracks the code the bot is actually written against.
+      - name: Checkout FoukoApi
+        uses: actions/checkout@v4
+        with:
+          repository: FoukoDev/FoukoApi
+          path: foukoapi
+
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+        with:
+          workspaces: bot
+
+      - name: Format
+        working-directory: bot
+        run: cargo fmt --all --check
+
+      - name: Clippy
+        working-directory: bot
+        run: cargo clippy --all-targets --config 'patch.crates-io.foukoapi.path="../foukoapi"'
+
+      - name: Test
+        working-directory: bot
+        run: cargo test --config 'patch.crates-io.foukoapi.path="../foukoapi"'
