@@ -1,0 +1,7 @@
+# Keep the build context small and never bake secrets into the image.
+target/
+.git/
+logs/
+*.sqlite
+.env
+data/

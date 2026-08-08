@@ -141,7 +141,7 @@ pub(crate) fn pretty_identity(primary: &str) -> String {
     let (platform, id) = primary.split_once(':').unwrap_or(("", primary));
     let short: String = id.chars().take(6).collect();
     let short = if id.chars().count() > 6 {
-        format!("{short}…")
+        format!("{short}...")
     } else {
         short
     };
@@ -221,7 +221,7 @@ mod tests {
     #[test]
     fn identity_is_readable() {
         assert_eq!(pretty_identity("discord:123"), "Discord 123");
-        assert_eq!(pretty_identity("telegram:1234567890"), "Telegram 123456…");
+        assert_eq!(pretty_identity("telegram:1234567890"), "Telegram 123456...");
         assert_eq!(pretty_identity("bare"), "bare");
     }
 

@@ -1,0 +1,47 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*"]
+
+env:
+  CARGO_TERM_COLOR: always
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    name: release build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      # Release builds compile against the published foukoapi crate from
+      # crates.io - no path patches here on purpose: a tagged bot must build
+      # from what users can actually fetch.
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Cache cargo
+        uses: Swatinem/rust-cache@v2
+
+      - name: Build
+        run: cargo build --release --locked
+
+      - name: Package
+        run: |
+          staging="foukobot-$GITHUB_REF_NAME-x86_64-linux"
+          mkdir "$staging"
+          cp target/release/foukobot README.md .env.example LICENSE "$staging/"
+          tar czf "$staging.tar.gz" "$staging"
+
+      # The GitHub release for the tag is created by hand beforehand. If it
+      # does not exist this step fails - that is intentional: it signals the
+      # operator to create the release rather than silently losing the
+      # artifact.
+      - name: Upload to release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release upload "$GITHUB_REF_NAME" "foukobot-$GITHUB_REF_NAME-x86_64-linux.tar.gz" --clobber

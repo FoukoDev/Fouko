@@ -1,0 +1,16 @@
+services:
+  foukobot:
+    build: .
+    restart: unless-stopped
+    # Tokens and optional settings live in .env next to this file.
+    env_file: .env
+    # Note: the environment section wins over env_file in Compose, so these
+    # two are fixed for the container - the DB and logs always land in the
+    # mounted /data volume regardless of what .env says.
+    environment:
+      FOUKO_DB: sqlite:/data/foukobot.sqlite
+      FOUKO_LOG_DIR: /data/logs
+    volumes:
+      - ./data:/data
+    # Give the bot time for a clean shutdown (in-flight updates, DB flush).
+    stop_grace_period: 30s

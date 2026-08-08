@@ -1,6 +1,6 @@
 [package]
 name = "foukobot"
-version = "0.1.1-alpha.1"
+version = "0.1.2-alpha.1"
 edition = "2021"
 rust-version = "1.75"
 authors = ["Fouko <mail@fouko.xyz>"]
@@ -18,8 +18,8 @@ publish = false
 [dependencies]
 # FoukoApi is pulled straight from crates.io. If you want to hack on both
 # crates side-by-side, swap this line for a path dependency:
-#     foukoapi = { path = "../FoukoApi", features = ["telegram", "discord", "sqlite", "crypto"] }
-foukoapi = { version = "0.1.1-alpha.1", features = ["telegram", "discord", "sqlite", "crypto"] }
+#     foukoapi = { path = "../FoukoApi", features = ["telegram", "discord", "sqlite", "crypto", "genai", "webapp", "tunnel"] }
+foukoapi = { version = "0.1.2-alpha.1", features = ["telegram", "discord", "sqlite", "crypto", "genai", "webapp", "tunnel"] }
 
 tokio = { version = "1.40", features = ["full"] }
 futures = "0.3"
@@ -39,6 +39,12 @@ serde = { version = "1", features = ["derive"] }
 serde_json = "1"
 # grapheme-aware /reverse; tiny, no transitive deps
 unicode-segmentation = "1"
+# The Mini App backend. Body limits and SSE ship in axum itself, so no
+# tower-http needed.
+axum = { version = "0.8", default-features = false, features = ["http1", "json", "tokio"] }
+# Images travel to the web app as data URLs (already in the tree via
+# foukoapi's genai feature).
+base64 = "0.22"
 
 [profile.release]
 lto = "thin"

@@ -5,6 +5,141 @@ All notable changes to FoukoBot are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.1.2-alpha.1] - 2026-08-08
+
+### Added
+- `/ai draw <prompt>` - generate an image with any image model on your
+  hosts (DALL-E, SDXL, Flux, ...). In a DM a plain "draw a cat" (or
+  "нарисуй кота") is detected and routed to the image model automatically.
+- `/ai video <prompt>` - generate a short video with a Sora-style video
+  model on your hosts and get it as a native video. Rendering takes a
+  couple of minutes; the bot says so and posts the result when it's done.
+  In a DM a plain "make a video of ..." is detected automatically.
+- `/ai speak <text>` - turn text into speech with a TTS model on your
+  hosts and get it as an audio file.
+- `/ai models` - list every model on your hosts (own and family-shared)
+  tagged with what it can do: image, video or audio. Capabilities come
+  from the host's metadata when available, or from the model name.
+- Vision: send the bot a photo (with a caption or without) in your `/ai`
+  chat and a vision-capable model (gpt-4o, llava, qwen-vl, ...) will
+  answer about it. Models that can't see images politely say so instead
+  of silently ignoring the picture. The photo itself is never saved to
+  chat history - only your text is.
+- `/ai speak voice:<name> <text>` - pick a voice for text-to-speech, and
+  `/ai speak voices` lists the known ones. The last voice you chose is
+  remembered and becomes your default.
+- Docker: the repo now ships a `Dockerfile` and `docker-compose.yml`.
+  Drop your `.env` next to them, run `docker compose up -d --build`, and
+  the database and logs live in `./data` on the host.
+- Release workflow: pushing a version tag builds the bot and attaches a
+  ready-to-run Linux binary to the GitHub release.
+- The model can call generation itself: say "create a cat picture" in
+  your `/ai` chat and the AI decides to run `generate_image` (or
+  `generate_video`, or `speak`) on its own, with the prompt it wrote.
+  Works with any chat model - the chat model makes the call, your
+  chosen generation model does the rendering. Turn it off with
+  `/ai tools off`; hosts that don't support tool calling automatically
+  fall back to the old phrase detection ("draw a cat" still works).
+- `/ai gen` - pin a model per generation type: `/ai gen image <host>
+  <model>` makes every image request use that model, same for `video`
+  and `audio`; `/ai gen image auto` returns to automatic pick. Bare
+  `/ai gen` shows the current choices.
+- `/ai model tag <host> <model> image|video|audio` - tell the bot what
+  a model can do when its name gives nothing away; `/ai model untag`
+  goes back to guessing from the name.
+- `/ai host insecure <name> on|off` - use a host with a self-signed
+  certificate. When a host fails with a certificate error, the bot
+  suggests this command right in the error message. In practice you
+  rarely need it: the bot now adapts on its own (see Changed), and the
+  command remains as a manual override.
+- `/ai model check <host> <model>` - probe a model for canned answers:
+  some dead upstreams keep returning one captured response to every
+  request. The check sends tiny inputs a live backend must react to and
+  reports a verdict (live, canned, unstable) with the evidence. Also
+  available as a button in the host's management card.
+- Management buttons in `/ai`. Every chat has a card: use it, change its
+  model with buttons, or delete it with a confirmation step. Every host
+  you own has a card too: refresh its models, toggle self-signed
+  certificates, check a model, or delete the host. Generation models
+  (`/ai gen`) are picked with buttons as well, and when creating a chat
+  you can also just type any model name instead of picking from the
+  list.
+- Telegram Mini App: the whole `/ai` in a web interface - chats with
+  live streaming answers, hosts, models and settings, all the same data
+  the bot uses. Sign-in is Telegram-only via the signed `initData`, so
+  nobody else can open your chats. Enable it by setting `WEBAPP_URL` in
+  `.env` and putting the built-in server behind a reverse proxy; the
+  bot then shows an "Open app" button in `/ai`, and Telegram gets an
+  app button right next to the message input field, automatically.
+- No domain? `WEBAPP_TUNNEL=cloudflared` in `.env` makes the bot start
+  a free Cloudflare quick tunnel on its own and use the
+  `https://<random>.trycloudflare.com` URL it gets - the Mini App works
+  from a laptop behind NAT with zero setup beyond installing the
+  `cloudflared` binary. The URL changes on every restart, so it's for
+  trying things out, not production.
+- Mini App: the send button turns into a stop button while an answer is
+  streaming. Stopping keeps whatever text already arrived instead of
+  throwing it away.
+- Mini App: messages carry a timestamp now, TG-style ("14:32" today,
+  date otherwise), and it's stored with the chat history - old entries
+  without one still load fine.
+- Mini App: switch the chat's model on the spot - tap the model line in
+  the chat header or use "Change model" in the chat's menu. History
+  survives the switch.
+- Mini App redesign: card layout, accent gradients, a dark/light theme
+  override (auto follows Telegram), interface language picker, and the
+  bot version in Settings.
+
+### Changed
+- The OpenAI-compatible client (chat, images, video, speech, model
+  discovery) moved into the framework as `foukoapi::genai`; the bot now
+  uses it through the new `genai` feature. Behaviour is unchanged.
+- AI answers now stream live: the bot posts a placeholder and keeps
+  editing it as the model generates, so you watch the answer appear in
+  real time instead of waiting for the whole thing.
+- `/ai host add` and `/ai host refresh` now show the reason when a
+  host's model list can't be fetched (wrong key, bad certificate, host
+  down) instead of silently reporting "0 models".
+- Hosts with self-signed certificates just work now: when a host's TLS
+  setup changes, the bot adapts by itself instead of waiting for you to
+  run `/ai host insecure`. The command stays as a manual override.
+- The "Open app" button in `/ai` only shows on Telegram now. On Discord
+  the Mini App has no way to sign you in, so the button there would
+  open a page that can't do anything.
+- Generation says what it's doing: "Drawing with <model> - hold on...",
+  "Voicing it with <model>...", and the video notice warns it can take
+  a couple of minutes. When the model calls generation itself, the
+  status recycles the streaming placeholder (edit-in-place) instead of
+  stacking a second notice under it - one status message, not two.
+
+### Fixed
+- The bot no longer drops its database into `target/`, and it finds the
+  `.env` next to the binary when started from another directory (see
+  the framework changelog). An existing database keeps working: a
+  legacy file next to the binary is picked up with a log line
+  suggesting where to move it.
+- Panic alerts to the owner are throttled to one per 10 minutes: a dead
+  bot token or a broken network used to restart the bot in a loop and
+  spam your DMs with an alert on every lap.
+- The model can no longer claim a video or audio job succeeded while it
+  is still rendering in the background (Mini App tool calls): the tool
+  result now tells it the job was queued and may still fail, so the
+  answer says "being prepared" instead of a premature "done!"
+- Owner verification no longer fails just because a platform was slow
+  to connect. Discord's gateway takes a few seconds longer than
+  Telegram, and the startup lookup used to give up on whichever was
+  late; now each platform gets a short grace period before the check
+  runs.
+- A broken generation-model pin (host gone, model dropped, access
+  revoked) is logged once and falls back to auto-pick quietly, instead
+  of repeating the same warning on every single message.
+- Mini App hardening pass: mutating api requests are
+  rate-limited per user (reads are exempt, so a refresh never trips
+  it), two answers can't stream into one chat at the same time and race
+  the history write, an expired session shows a proper "reopen the app"
+  screen instead of dead buttons, and a connection drop mid-answer
+  keeps the partial text instead of blanking the bubble.
+
 ## [0.1.1-alpha.1] - 2026-08-02
 
 ### Added
@@ -135,5 +270,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 Initial release.
 
+[0.1.2-alpha.1]: https://github.com/FoukoDev/Fouko/releases/tag/v0.1.2-alpha.1
 [0.1.1-alpha.1]: https://github.com/FoukoDev/Fouko/releases/tag/v0.1.1-alpha.1
 [0.1.0-alpha.1]: https://github.com/FoukoDev/Fouko/releases/tag/v0.1.0-alpha.1

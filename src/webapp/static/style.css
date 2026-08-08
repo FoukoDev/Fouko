@@ -1,0 +1,890 @@
+/* Theme colors come from Telegram when available; the fallbacks keep the
+   page readable in a plain browser or before themeParams arrive. */
+:root {
+  --bg: var(--tg-theme-bg-color, #1e1e2e);
+  --bg2: var(--tg-theme-secondary-bg-color, #2a2a3a);
+  --text: var(--tg-theme-text-color, #eeeeee);
+  --hint: var(--tg-theme-hint-color, #9a9ab0);
+  --accent: var(--tg-theme-button-color, #5288c1);
+  --accent-text: var(--tg-theme-button-text-color, #ffffff);
+  --link: var(--tg-theme-link-color, #8ab4ff);
+  --danger: #e5484d;
+  --line: rgba(128, 128, 150, 0.22);
+  /* Accent gradient: plain accent for old webviews, a two-stop blend
+     where color-mix exists. Used on primary buttons, own bubbles, the
+     active badge and the nav highlight. */
+  --accent-grad: var(--accent);
+}
+
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  :root {
+    --accent-grad: linear-gradient(135deg, var(--accent),
+      color-mix(in srgb, var(--accent) 70%, #7c5cff));
+  }
+}
+
+/* Manual theme override from Settings; wins over Telegram vars. */
+body.theme-dark {
+  --bg: #1e1e2e;
+  --bg2: #2a2a3a;
+  --text: #eeeeee;
+  --hint: #9a9ab0;
+  --accent: #5288c1;
+  --accent-text: #ffffff;
+  --link: #8ab4ff;
+}
+
+body.theme-light {
+  --bg: #f2f2f7;
+  --bg2: #ffffff;
+  --text: #1c1c1e;
+  --hint: #7d7d87;
+  --accent: #3478c0;
+  --accent-text: #ffffff;
+  --link: #2f6db3;
+  --line: rgba(60, 60, 80, 0.16);
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  font-size: 15px;
+  overflow-x: hidden;
+}
+
+/* A faint accent glow at the top gives the flat bg some depth. */
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  body {
+    background:
+      radial-gradient(120% 50% at 50% 0%,
+        color-mix(in srgb, var(--accent) 9%, transparent), transparent 70%)
+      var(--bg);
+    background-attachment: fixed;
+  }
+}
+
+.hidden { display: none !important; }
+
+.cover {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  padding: 24px;
+  text-align: center;
+  color: var(--hint);
+}
+
+main {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  height: 100dvh;
+}
+
+.tab {
+  flex: 1;
+  overflow-y: auto;
+  padding: 12px 12px 16px;
+  display: flex;
+  flex-direction: column;
+  animation: tab-in 0.15s ease-out;
+}
+
+@keyframes tab-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+/* Section headings: small uppercase labels. */
+.sec {
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--hint);
+  margin: 14px 4px 8px;
+}
+
+.sec:first-child { margin-top: 2px; }
+
+.hint {
+  color: var(--hint);
+  font-size: 13px;
+  line-height: 1.35;
+}
+
+.dim { color: var(--hint); }
+
+/* -- buttons -- */
+
+.btn {
+  border: none;
+  border-radius: 10px;
+  min-height: 44px;
+  padding: 0 16px;
+  font: inherit;
+  font-weight: 500;
+  cursor: pointer;
+  transition: opacity 0.15s, background 0.15s, transform 0.15s;
+}
+
+.btn:active { transform: scale(0.98); }
+
+.btn.primary {
+  background: var(--accent-grad);
+  color: var(--accent-text);
+}
+
+.btn.ghost {
+  background: transparent;
+  color: var(--text);
+  border: 1px solid var(--line);
+}
+
+.btn.danger {
+  background: transparent;
+  color: var(--danger);
+  border: 1px solid var(--danger);
+}
+
+.btn:disabled { opacity: 0.5; cursor: default; }
+
+/* -- inputs and selects -- */
+
+input, select, textarea {
+  border: 1px solid var(--line);
+  background: var(--bg2);
+  color: var(--text);
+  border-radius: 10px;
+  padding: 11px 12px;
+  font: inherit;
+  width: 100%;
+  outline: none;
+  transition: border-color 0.15s;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--accent);
+}
+
+/* Custom chevron so the select looks native to the app, not the OS. */
+select {
+  appearance: none;
+  -webkit-appearance: none;
+  padding-right: 34px;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24' fill='none' stroke='%239a9ab0' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+
+/* -- iOS-style toggle -- */
+
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 44px;
+  height: 26px;
+  flex-shrink: 0;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+  position: absolute;
+}
+
+.switch span {
+  position: absolute;
+  inset: 0;
+  border-radius: 13px;
+  background: var(--line);
+  transition: background 0.15s;
+}
+
+.switch span::before {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  left: 2px;
+  top: 2px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  transition: transform 0.15s;
+}
+
+.switch input:checked + span { background: var(--accent); }
+.switch input:checked + span::before { transform: translateX(18px); }
+
+/* -- bottom tab bar -- */
+
+.tabs {
+  display: flex;
+  height: calc(56px + env(safe-area-inset-bottom, 0px));
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+  border-top: 1px solid var(--line);
+  background: var(--bg);
+  flex-shrink: 0;
+}
+
+/* Glass nav where backdrop-filter works; solid bg stays the fallback. */
+@supports ((backdrop-filter: blur(14px)) or (-webkit-backdrop-filter: blur(14px))) {
+  .tabs {
+    -webkit-backdrop-filter: blur(14px);
+    backdrop-filter: blur(14px);
+    background: color-mix(in srgb, var(--bg) 72%, transparent);
+  }
+}
+
+.tabs button {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  background: none;
+  border: none;
+  color: var(--hint);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s;
+}
+
+.tabs button .label {
+  font-size: 11px;
+  line-height: 1;
+}
+
+.tabs button.active { color: var(--accent); }
+
+/* Gradient tint for the active tab label; the svg picks up currentColor. */
+@supports (color: color-mix(in srgb, red 50%, blue)) {
+  .tabs button.active {
+    color: color-mix(in srgb, var(--accent) 78%, #7c5cff);
+  }
+  .tabs button.active .label {
+    background: var(--accent-grad);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+}
+
+/* -- chat -- */
+
+.chat-head {
+  padding: 2px 4px 10px;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 8px;
+  cursor: pointer;
+}
+
+.chat-title {
+  font-weight: 600;
+  font-size: 16px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-sub {
+  color: var(--hint);
+  font-size: 12px;
+  margin-top: 2px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chat-log {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding-bottom: 8px;
+}
+
+.msg {
+  max-width: 85%;
+  padding: 9px 13px;
+  border-radius: 16px;
+  white-space: pre-wrap;
+  word-break: break-word;
+  line-height: 1.45;
+  font-size: 15px;
+  animation: msg-in 0.2s ease-out;
+}
+
+@keyframes msg-in {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: none; }
+}
+
+.msg.user {
+  align-self: flex-end;
+  background: var(--accent-grad);
+  color: var(--accent-text);
+  border-bottom-right-radius: 4px;
+}
+
+.msg.assistant {
+  align-self: flex-start;
+  background: var(--bg2);
+  border-bottom-left-radius: 4px;
+}
+
+/* Extra gap when the author changes. */
+.msg.user + .msg.assistant,
+.msg.assistant + .msg.user {
+  margin-top: 6px;
+}
+
+.msg.notice {
+  align-self: center;
+  color: var(--hint);
+  font-size: 13px;
+  background: none;
+  padding: 2px;
+}
+
+.msg img {
+  max-width: 100%;
+  border-radius: 12px;
+  display: block;
+}
+
+/* Small timestamp at the end of a bubble, TG style. */
+.msg-time {
+  display: inline-block;
+  margin-left: 8px;
+  font-size: 11px;
+  line-height: 1;
+  color: var(--hint);
+  vertical-align: baseline;
+  user-select: none;
+}
+
+.msg.user .msg-time {
+  color: var(--accent-text);
+  opacity: 0.7;
+}
+
+/* Blinking caret shown while the answer streams. */
+.msg.streaming::after {
+  content: "";
+  display: inline-block;
+  width: 2px;
+  height: 1em;
+  margin-left: 2px;
+  vertical-align: -0.15em;
+  background: var(--accent-grad);
+  animation: caret 1s step-end infinite;
+}
+
+@keyframes caret {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0; }
+}
+
+.chat-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 8px 0 4px;
+  border-top: 1px solid var(--line);
+  flex-shrink: 0;
+}
+
+.chat-input textarea {
+  flex: 1;
+  resize: none;
+  max-height: 120px; /* about 5 lines */
+  line-height: 1.4;
+}
+
+.chat-input button {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  border: none;
+  border-radius: 50%;
+  background: var(--accent-grad);
+  color: var(--accent-text);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.15s;
+  padding: 0;
+}
+
+.chat-input button:active { transform: scale(0.98); }
+.chat-input button:disabled { opacity: 0.4; cursor: default; }
+
+/* -- cards and lists -- */
+
+.list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.card {
+  background: var(--bg2);
+  border-radius: 12px;
+  padding: 14px 16px;
+  /* Inset top highlight plus a soft drop shadow for a bit of relief. */
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.card.tappable {
+  cursor: pointer;
+  transition: opacity 0.15s, transform 0.12s, box-shadow 0.12s;
+}
+.card.tappable:active {
+  opacity: 0.9;
+  transform: translateY(-1px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.05),
+    0 3px 8px rgba(0, 0, 0, 0.25);
+}
+
+.card .row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.card .name {
+  font-weight: 600;
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.card .sub {
+  color: var(--hint);
+  font-size: 13px;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.badge {
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 8px;
+  border-radius: 8px;
+  flex-shrink: 0;
+  background: rgba(128, 128, 150, 0.15);
+  color: var(--hint);
+}
+
+.badge.on {
+  background: var(--accent-grad);
+  color: var(--accent-text);
+}
+
+.badge.warn {
+  background: rgba(224, 160, 48, 0.18);
+  color: #e0a030;
+}
+
+.badge.info {
+  background: rgba(82, 136, 193, 0.18);
+  color: var(--link);
+}
+
+/* Kebab button on chat cards. */
+.kebab {
+  width: 36px;
+  height: 36px;
+  border: none;
+  background: none;
+  color: var(--hint);
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+
+.kebab:active { background: rgba(128, 128, 150, 0.15); }
+
+/* Empty states. */
+.empty {
+  text-align: center;
+  padding: 32px 16px;
+  color: var(--hint);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+}
+
+/* -- host card internals -- */
+
+.host-body {
+  margin-top: 12px;
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+}
+
+.models {
+  display: flex;
+  flex-direction: column;
+}
+
+.model-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  padding: 8px 0;
+  flex-wrap: wrap;
+}
+
+.model-row + .model-row { border-top: 1px solid var(--line); }
+
+.model-row .mname {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.chip {
+  font-size: 11px;
+  padding: 2px 7px;
+  border-radius: 6px;
+  background: rgba(128, 128, 150, 0.15);
+  color: var(--hint);
+  flex-shrink: 0;
+}
+
+.model-row select {
+  width: auto;
+  font-size: 13px;
+  padding: 6px 28px 6px 10px;
+  border-radius: 8px;
+}
+
+.model-row .btn {
+  min-height: 32px;
+  padding: 0 10px;
+  font-size: 13px;
+  border-radius: 8px;
+}
+
+.model-add {
+  display: flex;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.model-add input { flex: 1; }
+.model-add .btn { flex-shrink: 0; }
+
+.host-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 12px;
+  flex-wrap: wrap;
+}
+
+.host-actions .btn {
+  flex: 1;
+  min-height: 40px;
+  font-size: 14px;
+  padding: 0 10px;
+}
+
+/* -- forms -- */
+
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* -- settings -- */
+
+.card.group { padding: 4px 16px; }
+
+.setting {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 13px 0;
+}
+
+.setting + .setting,
+.info-row + .info-row {
+  border-top: 1px solid var(--line);
+}
+
+.setting label {
+  font-size: 15px;
+}
+
+.setting.row-setting {
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+}
+
+.setting .grow { flex: 1; min-width: 0; }
+
+.info-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 0;
+  font-size: 15px;
+}
+
+/* -- action sheet -- */
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  z-index: 20;
+}
+
+.sheet {
+  position: fixed;
+  left: 8px;
+  right: 8px;
+  bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+  background: var(--bg2);
+  border-radius: 14px;
+  padding: 6px;
+  z-index: 21;
+  animation: sheet-in 0.15s ease-out;
+}
+
+@keyframes sheet-in {
+  from { transform: translateY(16px); opacity: 0; }
+  to { transform: none; opacity: 1; }
+}
+
+.sheet button {
+  display: block;
+  width: 100%;
+  border: none;
+  background: none;
+  color: var(--text);
+  font: inherit;
+  text-align: center;
+  padding: 13px;
+  border-radius: 10px;
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.sheet button:active { background: rgba(128, 128, 150, 0.15); }
+.sheet button.danger { color: var(--danger); }
+.sheet button + button { border-top: 1px solid var(--line); border-radius: 0; }
+.sheet button:last-child { border-bottom-left-radius: 10px; border-bottom-right-radius: 10px; }
+
+.sheet .sheet-title {
+  text-align: center;
+  color: var(--hint);
+  font-size: 13px;
+  padding: 10px 12px 8px;
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* -- modal -- */
+
+.modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+  z-index: 30;
+}
+
+.modal-card {
+  background: var(--bg2);
+  border-radius: 14px;
+  padding: 16px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.modal-card h3 {
+  margin: 0;
+  font-size: 16px;
+}
+
+#modal-body {
+  overflow-y: auto;
+  min-height: 0;
+}
+
+#modal-body textarea {
+  min-height: 140px;
+  resize: vertical;
+}
+
+.modal-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+}
+
+.modal-actions .btn { min-width: 96px; }
+
+/* History viewer inside the modal. */
+.hist {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.hist .h-role {
+  font-size: 11px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+  color: var(--hint);
+}
+
+.hist .h-text {
+  white-space: pre-wrap;
+  word-break: break-word;
+  padding-bottom: 8px;
+  border-bottom: 1px solid var(--line);
+}
+
+/* -- toast -- */
+
+.toast {
+  position: fixed;
+  left: 50%;
+  bottom: calc(68px + env(safe-area-inset-bottom, 0px));
+  transform: translateX(-50%);
+  background: var(--bg2);
+  color: var(--text);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 10px 16px;
+  max-width: 90vw;
+  font-size: 13px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.3);
+  z-index: 40;
+}
+
+/* -- first-load skeleton -- */
+
+.skeleton {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 8px 0;
+}
+
+.sk-line {
+  height: 44px;
+  border-radius: 14px;
+  background: var(--bg2);
+  max-width: 75%;
+  animation: sk-pulse 1.2s ease-in-out infinite;
+}
+
+.sk-line.short {
+  max-width: 50%;
+  align-self: flex-end;
+}
+
+@keyframes sk-pulse {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* -- model picker modal -- */
+
+.model-pick {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.model-opt {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 11px 12px;
+  border-radius: 10px;
+  background: var(--bg);
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.model-opt:active { background: rgba(128, 128, 150, 0.12); }
+
+.model-opt input[type="radio"] {
+  width: 18px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  flex-shrink: 0;
+  accent-color: var(--accent);
+}
+
+.model-opt-name {
+  flex: 1;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.model-pick input[type="text"],
+.model-pick input:not([type]) {
+  margin-top: 8px;
+}
+
+/* -- disabled new-chat form when there is no host -- */
+
+.disabled-form input,
+.disabled-form select,
+.disabled-form .btn {
+  opacity: 0.5;
+}

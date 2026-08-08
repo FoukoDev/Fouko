@@ -86,12 +86,21 @@ impl OwnerAlerts {
         }
 
         // Resolve each configured id to a display name so the operator
-        // can see at a glance whose id ended up in .env.
+        // can see at a glance whose id ended up in .env. Adapters come up
+        // at their own pace (Discord's gateway takes a few seconds longer
+        // than Telegram), so give each platform a short grace period
+        // instead of failing the lookup on whichever was slower.
         for (platform, id) in [
             (PlatformKind::Telegram, self.tg_id.as_deref()),
             (PlatformKind::Discord, self.discord_id.as_deref()),
         ] {
             let Some(id) = id else { continue };
+            for _ in 0..30 {
+                if notifier.is_dm_ready(platform).await {
+                    break;
+                }
+                tokio::time::sleep(std::time::Duration::from_secs(1)).await;
+            }
             match notifier.user_name(platform, id).await {
                 Ok(Some(name)) => {
                     // Pretty line for the terminal, plain fact for the file.

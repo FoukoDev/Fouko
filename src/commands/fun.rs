@@ -463,7 +463,7 @@ async fn run_menu_action(ctx: Ctx, svc: &Services, action: &str) -> Result<()> {
             };
             (
                 svc.tr(&ctx, "menu_roll_title").await,
-                format!("d6 → **{n}**"),
+                format!("d6 -> **{n}**"),
             )
         }
         "cat" => {

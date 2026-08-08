@@ -9,6 +9,7 @@ mod ai;
 mod alerts;
 mod commands;
 mod strings;
+mod webapp;
 
 // "FOUKO" in ANSI Shadow; the framework paints the gradient.
 const ART: [&str; 6] = [
@@ -106,6 +107,77 @@ async fn main() -> anyhow::Result<()> {
         .and_then(|s| s.parse().ok())
         .unwrap_or(300);
 
+    // Mini App server: needs a public URL, the AI feature and a Telegram
+    // token (init data is signed with it). Missing any of those, it's off.
+    let bind: std::net::SocketAddr = non_empty_env("WEBAPP_BIND")
+        .and_then(|s| s.parse().ok())
+        .unwrap_or_else(|| ([127, 0, 0, 1], 8990).into());
+    let mut webapp_url = non_empty_env("WEBAPP_URL");
+    let mut webapp_tunneled = false;
+    // No explicit URL? A Cloudflare quick tunnel can hand us a free one.
+    // keep_alive supervises the cloudflared process: when the tunnel dies
+    // (network drop, laptop sleep, Cloudflare hiccup) a fresh one starts
+    // and the new URL is republished - env for the /ai keyboard, menu
+    // button through the notifier.
+    if webapp_url.is_none()
+        && non_empty_env("WEBAPP_TUNNEL").as_deref() == Some("cloudflared")
+        && services.ai.is_some()
+        && tg_token.is_some()
+    {
+        let (first_tx, first_rx) = std::sync::mpsc::channel::<String>();
+        let notifier_for_tunnel = notifier.clone();
+        foukoapi::tunnel::keep_alive(bind, move |url| {
+            tracing::info!(%url, "cloudflared quick tunnel is up");
+            // Publish via the env so every WEBAPP_URL reader (the /ai
+            // keyboard) picks it up without changes.
+            std::env::set_var("WEBAPP_URL", &url);
+            // The menu button needs an explicit republish; before the
+            // adapter is up this fails quietly and the startup publish
+            // covers it.
+            let n = notifier_for_tunnel.clone();
+            let u = url.clone();
+            tokio::spawn(async move {
+                if let Err(e) = n.set_menu_web_app("AI", &u).await {
+                    tracing::debug!(error = %e, "menu button republish skipped");
+                }
+            });
+            let _ = first_tx.send(url);
+        });
+        // Wait for the first URL so the banner and build_bot see it; the
+        // bot still starts (without the webapp button) if the tunnel
+        // can't come up right now - it will be republished once it does.
+        match tokio::task::spawn_blocking(move || {
+            first_rx.recv_timeout(std::time::Duration::from_secs(45))
+        })
+        .await
+        {
+            Ok(Ok(url)) => {
+                webapp_url = Some(url);
+                webapp_tunneled = true;
+            }
+            _ => {
+                tracing::warn!(
+                    "tunnel not up yet; starting without the webapp button, it will \
+                     appear when the tunnel connects"
+                );
+                webapp_tunneled = true;
+            }
+        }
+    }
+    // The local server runs whenever the feature is on - with a tunnel
+    // the public URL may arrive (or change) later, but the server has to
+    // be there for the tunnel to point at.
+    let webapp_on =
+        (webapp_url.is_some() || webapp_tunneled) && services.ai.is_some() && tg_token.is_some();
+    if webapp_on {
+        let svc = services.clone();
+        let ai = services.ai.clone().expect("checked above");
+        let token = tg_token.clone().expect("checked above");
+        tokio::spawn(async move {
+            webapp::serve(svc, ai, token, bind).await;
+        });
+    }
+
     let log_dir = std::env::var("FOUKO_LOG_DIR").unwrap_or_else(|_| "logs".to_owned());
     let owner_row = owner_alerts.summary();
     let mut startup = foukoapi::banner::Banner::new("FoukoBot", env!("CARGO_PKG_VERSION"))
@@ -117,6 +189,29 @@ async fn main() -> anyhow::Result<()> {
     } else {
         startup.row("ai", "disabled - set FOUKO_SECRET", Tone::Warn)
     };
+    if webapp_on {
+        if let Some(url) = &webapp_url {
+            let line = if webapp_tunneled {
+                format!("serving {url} (tunnel)")
+            } else {
+                format!("serving {url}")
+            };
+            startup = startup.row("webapp", &line, Tone::Ok);
+        } else {
+            // Tunnel mode without a URL yet - it reconnects on its own.
+            startup = startup.row("webapp", "tunnel connecting...", Tone::Warn);
+        }
+    } else if webapp_url.is_some() {
+        // URL is set but a prerequisite is missing - say which one.
+        let why = if services.ai.is_none() {
+            "off - needs FOUKO_SECRET"
+        } else {
+            "off - needs TG_TOKEN"
+        };
+        startup = startup.row("webapp", why, Tone::Warn);
+    } else {
+        startup = startup.row("webapp", "off - set WEBAPP_URL", Tone::Warn);
+    }
     startup = match &owner_row {
         Some(desc) => startup.row("owner", &format!("{desc} (verifying...)"), Tone::Plain),
         None => startup.row("owner", "not set - alerts off", Tone::Warn),
@@ -208,8 +303,10 @@ async fn main() -> anyhow::Result<()> {
     // `systemctl stop` don't fight the restart logic.
     let mut backoff = Duration::from_secs(1);
     let max_backoff = Duration::from_secs(60);
-    // Error alerts are throttled; panics are rare and always reported.
+    // Alerts are throttled: a dead token or a broken network panics or
+    // errors on every restart, and the owner needs one ping, not a feed.
     let mut last_error_alert: Option<Instant> = None;
+    let mut last_panic_alert: Option<Instant> = None;
     loop {
         let bot = build_bot(
             &tg_token,
@@ -249,13 +346,19 @@ async fn main() -> anyhow::Result<()> {
                     }
                     Err(_) => {
                         tracing::error!("bot panicked; restarting");
-                        owner_alerts
-                            .notify_titled(
-                                &notifier,
-                                "\u{1F6A8} FoukoBot panic",
-                                "Bot panicked and was restarted. Check the logs.",
-                            )
-                            .await;
+                        let due = last_panic_alert
+                            .map(|t| t.elapsed() >= ERROR_ALERT_COOLDOWN)
+                            .unwrap_or(true);
+                        if due {
+                            last_panic_alert = Some(Instant::now());
+                            owner_alerts
+                                .notify_titled(
+                                    &notifier,
+                                    "\u{1F6A8} FoukoBot panic",
+                                    "Bot panicked and was restarted. Check the logs.",
+                                )
+                                .await;
+                        }
                     }
                 }
             }
@@ -317,6 +420,19 @@ fn build_bot(
         bot = bot.add_platform(Platform::discord(token.clone()));
     }
 
+    // Presence is plain .env config, no code changes needed to reword it.
+    if let Some(presence) = presence_from_env() {
+        bot = bot.presence(presence);
+    }
+
+    // Mini App button next to the message box in Telegram DMs. Only when
+    // the webapp is actually being served.
+    if services.ai.is_some() {
+        if let Some(url) = non_empty_env("WEBAPP_URL") {
+            bot = bot.menu_web_app("AI", url);
+        }
+    }
+
     // Flood alarm: if the update rate blows past the threshold, DM the
     // owner (at most once per 10 minutes - the cooldown is the
     // framework's job here).
@@ -345,6 +461,53 @@ fn build_bot(
 /// Read an env var, returning `None` when it's missing or empty.
 fn non_empty_env(key: &str) -> Option<String> {
     std::env::var(key).ok().filter(|s| !s.is_empty())
+}
+
+/// Bot presence from .env: PRESENCE_KIND + PRESENCE_TEXT (+ PRESENCE_URL
+/// for streaming, PRESENCE_STATUS for the dot). Nothing set = no presence,
+/// Discord shows the plain green dot as always.
+fn presence_from_env() -> Option<foukoapi::Presence> {
+    use foukoapi::{Presence, PresenceStatus};
+
+    let text = non_empty_env("PRESENCE_TEXT")?;
+    let kind = non_empty_env("PRESENCE_KIND").unwrap_or_else(|| "playing".to_owned());
+    let mut presence = match kind.to_ascii_lowercase().as_str() {
+        "playing" => Presence::playing(&text),
+        "streaming" => {
+            let url = non_empty_env("PRESENCE_URL").unwrap_or_default();
+            if url.is_empty() {
+                tracing::warn!("PRESENCE_KIND=streaming needs PRESENCE_URL; using playing");
+                Presence::playing(&text)
+            } else {
+                Presence::streaming(&text, url)
+            }
+        }
+        "listening" => Presence::listening(&text),
+        "watching" => Presence::watching(&text),
+        "competing" => Presence::competing(&text),
+        // The free-form status line, no "Playing" prefix - for the jokes.
+        "custom" => Presence::custom(&text),
+        other => {
+            tracing::warn!(kind = other, "unknown PRESENCE_KIND; using playing");
+            Presence::playing(&text)
+        }
+    };
+    if let Some(state) = non_empty_env("PRESENCE_STATE") {
+        presence = presence.state(state);
+    }
+    if let Some(status) = non_empty_env("PRESENCE_STATUS") {
+        presence = presence.status(match status.to_ascii_lowercase().as_str() {
+            "online" => PresenceStatus::Online,
+            "idle" => PresenceStatus::Idle,
+            "dnd" | "donotdisturb" => PresenceStatus::DoNotDisturb,
+            "invisible" => PresenceStatus::Invisible,
+            other => {
+                tracing::warn!(status = other, "unknown PRESENCE_STATUS; using online");
+                PresenceStatus::Online
+            }
+        });
+    }
+    Some(presence)
 }
 
 /// Human line for the banner: what FOUKO_DB resolves to.

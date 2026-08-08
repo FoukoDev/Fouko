@@ -2263,6 +2263,13 @@ pub fn catalogue() -> I18n {
             ("de", "Die KI-Funktion ist auf diesem Bot nicht aktiviert (kein Schlüssel gesetzt)."),
             ("es", "La función de IA no está activada en este bot (sin clave de cifrado)."),
         ])
+        .add("ai_open_app", &[
+            ("en", "\u{1F4F1} Open the app"),
+            ("ru", "\u{1F4F1} Открыть приложение"),
+            ("uk", "\u{1F4F1} Відкрити застосунок"),
+            ("de", "\u{1F4F1} App öffnen"),
+            ("es", "\u{1F4F1} Abrir la aplicación"),
+        ])
         .add("ai_dm_only", &[
             ("en", "Manage your AI only in a private chat with the bot."),
             ("ru", "Управляй ИИ только в личке с ботом."),
@@ -2278,11 +2285,11 @@ pub fn catalogue() -> I18n {
             ("es", "\u{1F512} Solo en MD"),
         ])
         .add("ai_host_usage", &[
-            ("en", "Usage: `/ai host add <name> <url> [key]` or `/ai host del <name>`."),
-            ("ru", "Формат: `/ai host add <имя> <url> [ключ]` или `/ai host del <имя>`."),
-            ("uk", "Формат: `/ai host add <ім'я> <url> [ключ]` або `/ai host del <ім'я>`."),
-            ("de", "Nutzung: `/ai host add <Name> <URL> [Key]` oder `/ai host del <Name>`."),
-            ("es", "Uso: `/ai host add <nombre> <url> [clave]` o `/ai host del <nombre>`."),
+            ("en", "Usage: `/ai host add <name> <url> [key]`, `/ai host del <name>`, `/ai host refresh <name>` or `/ai host insecure <name> on|off`."),
+            ("ru", "Формат: `/ai host add <имя> <url> [ключ]`, `/ai host del <имя>`, `/ai host refresh <имя>` или `/ai host insecure <имя> on|off`."),
+            ("uk", "Формат: `/ai host add <ім'я> <url> [ключ]`, `/ai host del <ім'я>`, `/ai host refresh <ім'я>` або `/ai host insecure <ім'я> on|off`."),
+            ("de", "Nutzung: `/ai host add <Name> <URL> [Key]`, `/ai host del <Name>`, `/ai host refresh <Name>` oder `/ai host insecure <Name> on|off`."),
+            ("es", "Uso: `/ai host add <nombre> <url> [clave]`, `/ai host del <nombre>`, `/ai host refresh <nombre>` o `/ai host insecure <nombre> on|off`."),
         ])
         .add("ai_host_add_usage", &[
             ("en", "Usage: `/ai host add <name> <url> [key]`."),
@@ -2301,6 +2308,34 @@ pub fn catalogue() -> I18n {
         .add("ai_host_added", &[
             ("en", "Host added."), ("ru", "Хост добавлен."), ("uk", "Хост додано."),
             ("de", "Host hinzugefügt."), ("es", "Host añadido."),
+        ])
+        .add("ai_insecure_on", &[
+            ("en", "Accepting this host's self-signed certificate from now on. Traffic stays encrypted, but the server's identity is not verified - only use this for hosts you own."),
+            ("ru", "Теперь принимаю самоподписанный сертификат этого хоста. Трафик шифруется, но подлинность сервера не проверяется - включай только для своих хостов."),
+            ("uk", "Відтепер приймаю самопідписаний сертифікат цього хоста. Трафік шифрується, але справжність сервера не перевіряється - вмикай лише для своїх хостів."),
+            ("de", "Das selbstsignierte Zertifikat dieses Hosts wird ab jetzt akzeptiert. Der Verkehr bleibt verschlüsselt, aber die Identität des Servers wird nicht geprüft - nur für eigene Hosts verwenden."),
+            ("es", "A partir de ahora acepto el certificado autofirmado de este host. El tráfico va cifrado, pero la identidad del servidor no se verifica - úsalo solo con hosts tuyos."),
+        ])
+        .add("ai_insecure_off", &[
+            ("en", "Back to strict certificate checks for this host."),
+            ("ru", "Снова строгая проверка сертификата для этого хоста."),
+            ("uk", "Знову сувора перевірка сертифіката для цього хоста."),
+            ("de", "Für diesen Host gilt wieder die strikte Zertifikatsprüfung."),
+            ("es", "Vuelvo a la verificación estricta de certificados para este host."),
+        ])
+        .add("ai_discover_failed", &[
+            ("en", "Couldn't fetch the model list: {} - add models by hand or check the address."),
+            ("ru", "Не смог получить список моделей: {} - добавь модели вручную или проверь адрес."),
+            ("uk", "Не зміг отримати список моделей: {} - додай моделі вручну або перевір адресу."),
+            ("de", "Konnte die Modellliste nicht abrufen: {} - füge Modelle von Hand hinzu oder prüfe die Adresse."),
+            ("es", "No pude obtener la lista de modelos: {} - añade los modelos a mano o revisa la dirección."),
+        ])
+        .add("ai_insecure_hint", &[
+            ("en", "Looks like a self-signed certificate. If this host is yours, allow it with `/ai host insecure {} on`."),
+            ("ru", "Похоже на самоподписанный сертификат. Если это твой хост, разреши его: `/ai host insecure {} on`."),
+            ("uk", "Схоже на самопідписаний сертифікат. Якщо це твій хост, дозволь його: `/ai host insecure {} on`."),
+            ("de", "Sieht nach einem selbstsignierten Zertifikat aus. Wenn der Host dir gehört, erlaube ihn mit `/ai host insecure {} on`."),
+            ("es", "Parece un certificado autofirmado. Si el host es tuyo, permítelo con `/ai host insecure {} on`."),
         ])
         .add("ai_host_added_models", &[
             ("en", "Host added - found {} models on it. Create a chat: tap + Chat in /ai."),
@@ -2388,11 +2423,11 @@ pub fn catalogue() -> I18n {
             ("es", "¿Qué host debe usar el nuevo chat?"),
         ])
         .add("ai_wiz_pick_model", &[
-            ("en", "And which model?"),
-            ("ru", "А какую модель?"),
-            ("uk", "А яку модель?"),
-            ("de", "Und welches Modell?"),
-            ("es", "¿Y qué modelo?"),
+            ("en", "And which model? Tap one, or just type a model name in a message."),
+            ("ru", "А какую модель? Нажми кнопку или просто напиши имя модели сообщением."),
+            ("uk", "А яку модель? Натисни кнопку або просто напиши ім'я моделі повідомленням."),
+            ("de", "Und welches Modell? Tippe eines an oder schreib den Modellnamen einfach als Nachricht."),
+            ("es", "¿Y qué modelo? Toca uno o simplemente escribe el nombre del modelo en un mensaje."),
         ])
         .add("ai_wiz_chat_name", &[
             ("en", "Almost done - name this chat:"),
@@ -2431,11 +2466,11 @@ pub fn catalogue() -> I18n {
             ("de", "Kein solcher Host."), ("es", "No existe ese host."),
         ])
         .add("ai_model_usage", &[
-            ("en", "Usage: `/ai model add <host> <model>` or `/ai model del <host> <model>`."),
-            ("ru", "Формат: `/ai model add <хост> <модель>` или `/ai model del <хост> <модель>`."),
-            ("uk", "Формат: `/ai model add <хост> <модель>` або `/ai model del <хост> <модель>`."),
-            ("de", "Nutzung: `/ai model add <Host> <Modell>` oder `/ai model del <Host> <Modell>`."),
-            ("es", "Uso: `/ai model add <host> <modelo>` o `/ai model del <host> <modelo>`."),
+            ("en", "Usage: `/ai model add|del <host> <model>`, `/ai model tag <host> <model> <cap>` or `/ai model untag <host> <model>`."),
+            ("ru", "Формат: `/ai model add|del <хост> <модель>`, `/ai model tag <хост> <модель> <тип>` или `/ai model untag <хост> <модель>`."),
+            ("uk", "Формат: `/ai model add|del <хост> <модель>`, `/ai model tag <хост> <модель> <тип>` або `/ai model untag <хост> <модель>`."),
+            ("de", "Nutzung: `/ai model add|del <Host> <Modell>`, `/ai model tag <Host> <Modell> <Typ>` oder `/ai model untag <Host> <Modell>`."),
+            ("es", "Uso: `/ai model add|del <host> <modelo>`, `/ai model tag <host> <modelo> <tipo>` o `/ai model untag <host> <modelo>`."),
         ])
         .add("ai_model_added", &[
             ("en", "Model added."), ("ru", "Модель добавлена."), ("uk", "Модель додано."),
@@ -2451,6 +2486,55 @@ pub fn catalogue() -> I18n {
             ("uk", "Ця модель не додана на хост. Додай: `/ai model add`."),
             ("de", "Dieses Modell ist nicht am Host registriert. Füge es mit `/ai model add` hinzu."),
             ("es", "Ese modelo no está registrado en el host. Añádelo con `/ai model add`."),
+        ])
+        .add("ai_check_usage", &[
+            ("en", "Usage: `/ai model check <host> <model>` - a quick probe to see if the model actually answers or just replays a canned response."),
+            ("ru", "Формат: `/ai model check <хост> <модель>` - быстрая проверка, отвечает ли модель по-настоящему или крутит заготовленный ответ."),
+            ("uk", "Формат: `/ai model check <хост> <модель>` - швидка перевірка, чи модель відповідає по-справжньому, чи крутить заготовлену відповідь."),
+            ("de", "Nutzung: `/ai model check <Host> <Modell>` - ein kurzer Test, ob das Modell wirklich antwortet oder nur eine Konservenantwort abspielt."),
+            ("es", "Uso: `/ai model check <host> <modelo>` - una prueba rápida para ver si el modelo responde de verdad o repite una respuesta enlatada."),
+        ])
+        .add("ai_check_live", &[
+            ("en", "\u{2705} The model answers like a live one"),
+            ("ru", "\u{2705} Модель отвечает как живая"),
+            ("uk", "\u{2705} Модель відповідає як жива"),
+            ("de", "\u{2705} Das Modell antwortet wie ein echtes"),
+            ("es", "\u{2705} El modelo responde como uno vivo"),
+        ])
+        .add("ai_check_canned", &[
+            ("en", "\u{26D4} Looks canned - the answers don't depend on the input"),
+            ("ru", "\u{26D4} Похоже на заглушку - ответы не зависят от ввода"),
+            ("uk", "\u{26D4} Схоже на заглушку - відповіді не залежать від вводу"),
+            ("de", "\u{26D4} Sieht nach Konserve aus - die Antworten hängen nicht von der Eingabe ab"),
+            ("es", "\u{26D4} Parece enlatado - las respuestas no dependen de la entrada"),
+        ])
+        .add("ai_check_unstable", &[
+            ("en", "\u{26A0}\u{FE0F} Unstable - it alternates between errors and answers"),
+            ("ru", "\u{26A0}\u{FE0F} Нестабильная - чередует ошибки и ответы"),
+            ("uk", "\u{26A0}\u{FE0F} Нестабільна - чергує помилки та відповіді"),
+            ("de", "\u{26A0}\u{FE0F} Instabil - es wechselt zwischen Fehlern und Antworten"),
+            ("es", "\u{26A0}\u{FE0F} Inestable - alterna entre errores y respuestas"),
+        ])
+        .add("ai_check_notsupported", &[
+            ("en", "\u{1F6AB} The host doesn't support such requests for this model"),
+            ("ru", "\u{1F6AB} Хост не поддерживает такие запросы для этой модели"),
+            ("uk", "\u{1F6AB} Хост не підтримує такі запити для цієї моделі"),
+            ("de", "\u{1F6AB} Der Host unterstützt solche Anfragen für dieses Modell nicht"),
+            ("es", "\u{1F6AB} El host no admite este tipo de solicitudes para este modelo"),
+        ])
+        .add("ai_check_no_video", &[
+            ("en", "No check for video models yet - a probe would cost a whole render."),
+            ("ru", "Для видео-моделей проверки пока нет - проба стоила бы целого рендера."),
+            ("uk", "Для відео-моделей перевірки поки немає - проба коштувала б цілого рендеру."),
+            ("de", "Für Videomodelle gibt es noch keinen Check - eine Probe würde ein ganzes Rendering kosten."),
+            ("es", "Aún no hay comprobación para modelos de vídeo - una prueba costaría un render entero."),
+        ])
+        .add("ai_check_pick", &[
+            ("en", "Which model should I check? The probe sends a couple of tiny requests."),
+            ("ru", "Какую модель проверить? Проба отправит пару крошечных запросов."),
+            ("uk", "Яку модель перевірити? Проба надішле пару крихітних запитів."),
+            ("de", "Welches Modell soll ich prüfen? Die Probe schickt ein paar winzige Anfragen."),
+            ("es", "¿Qué modelo compruebo? La prueba envía un par de solicitudes diminutas."),
         ])
         .add("ai_chat_usage", &[
             ("en", "Usage: `/ai chat new <name> <host> <model>` or `/ai chat del <name>`."),
@@ -2527,12 +2611,47 @@ pub fn catalogue() -> I18n {
             ("de", "Schreib eine Nachricht nach `/ai say` oder einfach hier im DM."),
             ("es", "Escribe un mensaje tras `/ai say`, o simplemente escribe en este chat."),
         ])
+        .add("ai_vision_no_model", &[
+            ("en", "This chat's model can't see images - create a chat with a vision model (gpt-4o, llava, qwen-vl...)."),
+            ("ru", "Модель этого чата не понимает картинки - создай чат с vision-моделью (gpt-4o, llava, qwen-vl...)."),
+            ("uk", "Модель цього чату не розуміє картинки - створи чат із vision-моделлю (gpt-4o, llava, qwen-vl...)."),
+            ("de", "Das Modell dieses Chats versteht keine Bilder - erstelle einen Chat mit einem Vision-Modell (gpt-4o, llava, qwen-vl...)."),
+            ("es", "El modelo de este chat no entiende imágenes - crea un chat con un modelo de visión (gpt-4o, llava, qwen-vl...)."),
+        ])
+        .add("ai_vision_default_prompt", &[
+            ("en", "What is in this image?"),
+            ("ru", "Что на этой картинке?"),
+            ("uk", "Що на цій картинці?"),
+            ("de", "Was ist auf diesem Bild?"),
+            ("es", "¿Qué hay en esta imagen?"),
+        ])
+        .add("ai_vision_fetch_failed", &[
+            ("en", "Couldn't download the image - try sending it again."),
+            ("ru", "Не смог скачать картинку - попробуй отправить ещё раз."),
+            ("uk", "Не зміг завантажити картинку - спробуй надіслати ще раз."),
+            ("de", "Konnte das Bild nicht herunterladen - versuch es noch einmal."),
+            ("es", "No pude descargar la imagen - intenta enviarla de nuevo."),
+        ])
         .add("ai_error", &[
             ("en", "AI request failed: {}"),
             ("ru", "Запрос к ИИ не удался: {}"),
             ("uk", "Запит до ШІ не вдався: {}"),
             ("de", "KI-Anfrage fehlgeschlagen: {}"),
             ("es", "La solicitud a la IA falló: {}"),
+        ])
+        .add("ai_thinking", &[
+            ("en", "Thinking..."),
+            ("ru", "Думаю..."),
+            ("uk", "Думаю..."),
+            ("de", "Denke nach..."),
+            ("es", "Pensando..."),
+        ])
+        .add("ai_stream_broken", &[
+            ("en", "(cut off: {})"),
+            ("ru", "(оборвалось: {})"),
+            ("uk", "(обірвалося: {})"),
+            ("de", "(abgebrochen: {})"),
+            ("es", "(interrumpido: {})"),
         ])
         .add("ai_store_error", &[
             ("en", "Couldn't read your AI settings right now - nothing was changed. Try again later."),
@@ -2675,6 +2794,411 @@ pub fn catalogue() -> I18n {
             ("uk", "Твоє запрошення для **{}** лишилося без відповіді 24 год і було скасовано."),
             ("de", "Deine Einladung an **{}** blieb 24h unbeantwortet und wurde storniert."),
             ("es", "Tu invitación a **{}** quedó sin respuesta durante 24h y fue cancelada."),
+        ])
+        .add("ai_draw_usage", &[
+            ("en", "Tell me what to draw: `/ai draw <prompt>`."),
+            ("ru", "Скажи, что нарисовать: `/ai draw <промпт>`."),
+            ("uk", "Скажи, що намалювати: `/ai draw <промпт>`."),
+            ("de", "Sag mir, was ich zeichnen soll: `/ai draw <Prompt>`."),
+            ("es", "Dime qué dibujar: `/ai draw <prompt>`."),
+        ])
+        .add("ai_draw_no_model", &[
+            ("en", "None of your hosts can draw - you need one with DALL-E, SDXL or a similar image model."),
+            ("ru", "Ни один из твоих хостов не умеет рисовать - нужен хост с DALL-E, SDXL или похожей моделью."),
+            ("uk", "Жоден з твоїх хостів не вміє малювати - потрібен хост з DALL-E, SDXL або схожою моделлю."),
+            ("de", "Keiner deiner Hosts kann zeichnen - du brauchst einen mit DALL-E, SDXL oder einem ähnlichen Bildmodell."),
+            ("es", "Ninguno de tus hosts sabe dibujar - necesitas uno con DALL-E, SDXL o un modelo de imagen similar."),
+        ])
+        .add("ai_draw_failed", &[
+            ("en", "Couldn't draw that: {}"),
+            ("ru", "Не получилось нарисовать: {}"),
+            ("uk", "Не вийшло намалювати: {}"),
+            ("de", "Konnte das nicht zeichnen: {}"),
+            ("es", "No pude dibujar eso: {}"),
+        ])
+        .add("ai_draw_not_supported", &[
+            ("en", "This host can't draw - it has no image endpoint."),
+            ("ru", "Этот хост не умеет рисовать - у него нет эндпоинта картинок."),
+            ("uk", "Цей хост не вміє малювати - у нього немає ендпоінта картинок."),
+            ("de", "Dieser Host kann nicht zeichnen - er hat keinen Bild-Endpunkt."),
+            ("es", "Este host no sabe dibujar - no tiene endpoint de imágenes."),
+        ])
+        .add("ai_video_usage", &[
+            ("en", "Tell me what to film: `/ai video <prompt>`."),
+            ("ru", "Скажи, что снять: `/ai video <промпт>`."),
+            ("uk", "Скажи, що зняти: `/ai video <промпт>`."),
+            ("de", "Sag mir, was ich filmen soll: `/ai video <Prompt>`."),
+            ("es", "Dime qué filmar: `/ai video <prompt>`."),
+        ])
+        .add("ai_video_no_model", &[
+            ("en", "None of your hosts can make videos - you need one with Sora or a similar video model."),
+            ("ru", "Ни один из твоих хостов не умеет делать видео - нужен хост с Sora или похожей моделью."),
+            ("uk", "Жоден з твоїх хостів не вміє робити відео - потрібен хост із Sora або схожою моделлю."),
+            ("de", "Keiner deiner Hosts kann Videos erzeugen - du brauchst einen mit Sora oder einem ähnlichen Videomodell."),
+            ("es", "Ninguno de tus hosts sabe hacer vídeos - necesitas uno con Sora o un modelo de vídeo similar."),
+        ])
+        .add("ai_video_working", &[
+            ("en", "\u{1F3AC} Generating the video - this can take a couple of minutes..."),
+            ("ru", "\u{1F3AC} Генерирую видео - это может занять пару минут..."),
+            ("uk", "\u{1F3AC} Генерую відео - це може зайняти кілька хвилин..."),
+            ("de", "\u{1F3AC} Erzeuge das Video - das kann ein paar Minuten dauern..."),
+            ("es", "\u{1F3AC} Generando el vídeo - puede tardar un par de minutos..."),
+        ])
+        .add("ai_draw_working", &[
+            ("en", "\u{1F58C} Drawing with {} - hold on..."),
+            ("ru", "\u{1F58C} Рисую через {} - секунду..."),
+            ("uk", "\u{1F58C} Малюю через {} - хвилинку..."),
+            ("de", "\u{1F58C} Zeichne mit {} - einen Moment..."),
+            ("es", "\u{1F58C} Dibujando con {} - un momento..."),
+        ])
+        .add("ai_speak_working", &[
+            ("en", "\u{1F50A} Voicing it with {} - hold on..."),
+            ("ru", "\u{1F50A} Озвучиваю через {} - секунду..."),
+            ("uk", "\u{1F50A} Озвучую через {} - хвилинку..."),
+            ("de", "\u{1F50A} Vertone es mit {} - einen Moment..."),
+            ("es", "\u{1F50A} Poniendo voz con {} - un momento..."),
+        ])
+        .add("ai_video_failed", &[
+            ("en", "Couldn't make that video: {}"),
+            ("ru", "Не получилось сделать видео: {}"),
+            ("uk", "Не вийшло зробити відео: {}"),
+            ("de", "Konnte das Video nicht erzeugen: {}"),
+            ("es", "No pude hacer ese vídeo: {}"),
+        ])
+        .add("ai_video_not_supported", &[
+            ("en", "This host can't make videos - it has no video endpoint."),
+            ("ru", "Этот хост не умеет делать видео - у него нет видео-эндпоинта."),
+            ("uk", "Цей хост не вміє робити відео - у нього немає відео-ендпоінта."),
+            ("de", "Dieser Host kann keine Videos erzeugen - er hat keinen Video-Endpunkt."),
+            ("es", "Este host no sabe hacer vídeos - no tiene endpoint de vídeo."),
+        ])
+        .add("ai_speak_usage", &[
+            ("en", "Tell me what to say: `/ai speak [voice:<name>] <text>`. Voices: `/ai speak voices`."),
+            ("ru", "Скажи, что озвучить: `/ai speak [voice:<имя>] <текст>`. Голоса: `/ai speak voices`."),
+            ("uk", "Скажи, що озвучити: `/ai speak [voice:<ім'я>] <текст>`. Голоси: `/ai speak voices`."),
+            ("de", "Sag mir, was ich sprechen soll: `/ai speak [voice:<Name>] <Text>`. Stimmen: `/ai speak voices`."),
+            ("es", "Dime qué decir: `/ai speak [voice:<nombre>] <texto>`. Voces: `/ai speak voices`."),
+        ])
+        .add("ai_speak_voices_title", &[
+            ("en", "\u{1F5E3} Voices"),
+            ("ru", "\u{1F5E3} Голоса"),
+            ("uk", "\u{1F5E3} Голоси"),
+            ("de", "\u{1F5E3} Stimmen"),
+            ("es", "\u{1F5E3} Voces"),
+        ])
+        .add("ai_speak_voice_hint", &[
+            ("en", "Check the voice name: `/ai speak voices`."),
+            ("ru", "Проверь имя голоса: `/ai speak voices`."),
+            ("uk", "Перевір ім'я голосу: `/ai speak voices`."),
+            ("de", "Prüfe den Stimmennamen: `/ai speak voices`."),
+            ("es", "Comprueba el nombre de la voz: `/ai speak voices`."),
+        ])
+        .add("ai_speak_no_model", &[
+            ("en", "None of your hosts can speak - you need one with a TTS model."),
+            ("ru", "Ни один из твоих хостов не умеет озвучивать - нужен хост с TTS-моделью."),
+            ("uk", "Жоден з твоїх хостів не вміє озвучувати - потрібен хост із TTS-моделлю."),
+            ("de", "Keiner deiner Hosts kann sprechen - du brauchst einen mit einem TTS-Modell."),
+            ("es", "Ninguno de tus hosts sabe hablar - necesitas uno con un modelo TTS."),
+        ])
+        .add("ai_speak_failed", &[
+            ("en", "Couldn't voice that: {}"),
+            ("ru", "Не получилось озвучить: {}"),
+            ("uk", "Не вийшло озвучити: {}"),
+            ("de", "Konnte das nicht vertonen: {}"),
+            ("es", "No pude dar voz a eso: {}"),
+        ])
+        .add("ai_speak_not_supported", &[
+            ("en", "This host can't speak - it has no speech endpoint."),
+            ("ru", "Этот хост не умеет озвучивать - у него нет эндпоинта речи."),
+            ("uk", "Цей хост не вміє озвучувати - у нього немає ендпоінта мовлення."),
+            ("de", "Dieser Host kann nicht sprechen - er hat keinen Sprach-Endpunkt."),
+            ("es", "Este host no sabe hablar - no tiene endpoint de voz."),
+        ])
+        .add("ai_models_title", &[
+            ("en", "\u{1F4CB} Your models"),
+            ("ru", "\u{1F4CB} Твои модели"),
+            ("uk", "\u{1F4CB} Твої моделі"),
+            ("de", "\u{1F4CB} Deine Modelle"),
+            ("es", "\u{1F4CB} Tus modelos"),
+        ])
+        .add("ai_models_none", &[
+            ("en", "No models yet - add a host with `/ai host add` or a model with `/ai model add`."),
+            ("ru", "Моделей ещё нет - добавь хост `/ai host add` или модель `/ai model add`."),
+            ("uk", "Моделей ще немає - додай хост `/ai host add` або модель `/ai model add`."),
+            ("de", "Noch keine Modelle - füge einen Host mit `/ai host add` oder ein Modell mit `/ai model add` hinzu."),
+            ("es", "Aún no hay modelos - añade un host con `/ai host add` o un modelo con `/ai model add`."),
+        ])
+        .add("ai_models_note_video", &[
+            ("en", "Video generation can take a couple of minutes."),
+            ("ru", "Генерация видео может занять пару минут."),
+            ("uk", "Генерація відео може зайняти кілька хвилин."),
+            ("de", "Die Videoerzeugung kann ein paar Minuten dauern."),
+            ("es", "La generación de vídeo puede tardar un par de minutos."),
+        ])
+        .add("ai_cap_image", &[
+            ("en", "image"), ("ru", "картинки"), ("uk", "картинки"),
+            ("de", "Bilder"), ("es", "imágenes"),
+        ])
+        .add("ai_cap_video", &[
+            ("en", "video"), ("ru", "видео"), ("uk", "відео"),
+            ("de", "Video"), ("es", "vídeo"),
+        ])
+        .add("ai_cap_audio", &[
+            ("en", "audio"), ("ru", "звук"), ("uk", "звук"),
+            ("de", "Audio"), ("es", "audio"),
+        ])
+        .add("ai_models_more", &[
+            ("en", "... and {} more"),
+            ("ru", "... и ещё {}"),
+            ("uk", "... і ще {}"),
+            ("de", "... und {} weitere"),
+            ("es", "... y {} más"),
+        ])
+        .add("ai_tools_on", &[
+            ("en", "Tools are on - the model can draw, film and speak on its own now."),
+            ("ru", "Инструменты включены - модель теперь сама может рисовать, снимать и озвучивать."),
+            ("uk", "Інструменти ввімкнено - модель тепер сама може малювати, знімати й озвучувати."),
+            ("de", "Tools sind an - das Modell kann jetzt selbst zeichnen, filmen und sprechen."),
+            ("es", "Herramientas activadas - el modelo ahora puede dibujar, filmar y hablar por su cuenta."),
+        ])
+        .add("ai_tools_off", &[
+            ("en", "Tools are off - generation only via /ai draw, video and speak."),
+            ("ru", "Инструменты выключены - генерация только через /ai draw, video и speak."),
+            ("uk", "Інструменти вимкнено - генерація лише через /ai draw, video і speak."),
+            ("de", "Tools sind aus - Generierung nur über /ai draw, video und speak."),
+            ("es", "Herramientas desactivadas - generación solo con /ai draw, video y speak."),
+        ])
+        .add("ai_tools_status_on", &[
+            ("en", "Tools are on: the model may call image, video and speech generation itself. `/ai tools off` disables that."),
+            ("ru", "Инструменты включены: модель может сама вызывать генерацию картинок, видео и речи. `/ai tools off` выключит."),
+            ("uk", "Інструменти ввімкнено: модель може сама викликати генерацію картинок, відео й мовлення. `/ai tools off` вимкне."),
+            ("de", "Tools sind an: das Modell darf Bild-, Video- und Spracherzeugung selbst aufrufen. `/ai tools off` schaltet das ab."),
+            ("es", "Herramientas activadas: el modelo puede invocar por sí mismo la generación de imágenes, vídeo y voz. `/ai tools off` lo desactiva."),
+        ])
+        .add("ai_tools_status_off", &[
+            ("en", "Tools are off: the model won't trigger generation itself. `/ai tools on` enables that."),
+            ("ru", "Инструменты выключены: модель сама генерацию не запускает. `/ai tools on` включит."),
+            ("uk", "Інструменти вимкнено: модель сама генерацію не запускає. `/ai tools on` увімкне."),
+            ("de", "Tools sind aus: das Modell löst keine Generierung selbst aus. `/ai tools on` schaltet das ein."),
+            ("es", "Herramientas desactivadas: el modelo no inicia la generación por sí mismo. `/ai tools on` lo activa."),
+        ])
+        .add("ai_gen_title", &[
+            ("en", "\u{1F3A8} Generation models"),
+            ("ru", "\u{1F3A8} Модели генерации"),
+            ("uk", "\u{1F3A8} Моделі генерації"),
+            ("de", "\u{1F3A8} Generierungsmodelle"),
+            ("es", "\u{1F3A8} Modelos de generación"),
+        ])
+        .add("ai_gen_auto", &[
+            ("en", "auto: {}"),
+            ("ru", "авто: {}"),
+            ("uk", "авто: {}"),
+            ("de", "auto: {}"),
+            ("es", "auto: {}"),
+        ])
+        .add("ai_gen_none", &[
+            ("en", "no model"),
+            ("ru", "нет модели"),
+            ("uk", "немає моделі"),
+            ("de", "kein Modell"),
+            ("es", "sin modelo"),
+        ])
+        .add("ai_gen_set", &[
+            ("en", "Done - {} now handles {}."),
+            ("ru", "Готово - {} теперь отвечает за {}."),
+            ("uk", "Готово - {} тепер відповідає за {}."),
+            ("de", "Erledigt - {} übernimmt jetzt {}."),
+            ("es", "Hecho - {} ahora se encarga de {}."),
+        ])
+        .add("ai_gen_reset", &[
+            ("en", "Pin removed - the bot picks a model itself again."),
+            ("ru", "Закрепление снято - бот снова выбирает модель сам."),
+            ("uk", "Закріплення знято - бот знову обирає модель сам."),
+            ("de", "Pin entfernt - der Bot wählt wieder selbst ein Modell."),
+            ("es", "Fijación quitada - el bot vuelve a elegir el modelo solo."),
+        ])
+        .add("ai_gen_bad", &[
+            ("en", "Can't find that model, or it can't produce this. Check `/ai models`; `/ai model tag` helps when a name says nothing."),
+            ("ru", "Такой модели нет, или она этого не умеет. Проверь `/ai models`; если имя ни о чём не говорит, поможет `/ai model tag`."),
+            ("uk", "Такої моделі немає, або вона цього не вміє. Перевір `/ai models`; якщо ім'я ні про що не каже, допоможе `/ai model tag`."),
+            ("de", "Dieses Modell gibt es nicht, oder es kann das nicht. Prüfe `/ai models`; wenn der Name nichts verrät, hilft `/ai model tag`."),
+            ("es", "Ese modelo no existe, o no sabe hacer esto. Revisa `/ai models`; si el nombre no dice nada, `/ai model tag` ayuda."),
+        ])
+        .add("ai_gen_usage", &[
+            ("en", "Usage: `/ai gen <image|video|audio> <host> <model>` or `/ai gen <image|video|audio> auto`."),
+            ("ru", "Формат: `/ai gen <image|video|audio> <хост> <модель>` или `/ai gen <image|video|audio> auto`."),
+            ("uk", "Формат: `/ai gen <image|video|audio> <хост> <модель>` або `/ai gen <image|video|audio> auto`."),
+            ("de", "Nutzung: `/ai gen <image|video|audio> <Host> <Modell>` oder `/ai gen <image|video|audio> auto`."),
+            ("es", "Uso: `/ai gen <image|video|audio> <host> <modelo>` o `/ai gen <image|video|audio> auto`."),
+        ])
+        .add("ai_gen_hint", &[
+            ("en", "`/ai gen image <host> <model>` pins a model, `/ai gen image auto` unpins it. Same for video and audio."),
+            ("ru", "`/ai gen image <хост> <модель>` закрепит модель, `/ai gen image auto` снимет. То же для video и audio."),
+            ("uk", "`/ai gen image <хост> <модель>` закріпить модель, `/ai gen image auto` зніме. Те саме для video і audio."),
+            ("de", "`/ai gen image <Host> <Modell>` pinnt ein Modell, `/ai gen image auto` löst es. Genauso für video und audio."),
+            ("es", "`/ai gen image <host> <modelo>` fija un modelo, `/ai gen image auto` lo quita. Igual para video y audio."),
+        ])
+        .add("ai_tag_done", &[
+            ("en", "Tagged - the model now shows up with that capability."),
+            ("ru", "Помечено - теперь модель числится с этим умением."),
+            ("uk", "Позначено - тепер модель значиться з цим умінням."),
+            ("de", "Markiert - das Modell führt diese Fähigkeit jetzt."),
+            ("es", "Etiquetado - el modelo ahora figura con esa capacidad."),
+        ])
+        .add("ai_untag_done", &[
+            ("en", "Tags cleared - the bot goes by the model's name again."),
+            ("ru", "Метки сняты - бот снова судит по имени модели."),
+            ("uk", "Мітки знято - бот знову судить за ім'ям моделі."),
+            ("de", "Markierungen entfernt - der Bot geht wieder nach dem Modellnamen."),
+            ("es", "Etiquetas quitadas - el bot vuelve a guiarse por el nombre del modelo."),
+        ])
+        .add("ai_cap_unknown", &[
+            ("en", "The capability must be image, video or audio."),
+            ("ru", "Тип должен быть image, video или audio."),
+            ("uk", "Тип має бути image, video або audio."),
+            ("de", "Der Typ muss image, video oder audio sein."),
+            ("es", "El tipo debe ser image, video o audio."),
+        ])
+        // -- /ai button views -------------------------------------------------
+        .add("ai_chat_manage_body", &[
+            ("en", "Model: `{}`\nHost: {}"),
+            ("ru", "Модель: `{}`\nХост: {}"),
+            ("uk", "Модель: `{}`\nХост: {}"),
+            ("de", "Modell: `{}`\nHost: {}"),
+            ("es", "Modelo: `{}`\nHost: {}"),
+        ])
+        .add("ai_chat_del_confirm", &[
+            ("en", "Delete this chat along with its history? This can't be undone."),
+            ("ru", "Удалить этот чат вместе с историей? Вернуть не получится."),
+            ("uk", "Видалити цей чат разом з історією? Повернути не вийде."),
+            ("de", "Diesen Chat samt Verlauf löschen? Das lässt sich nicht rückgängig machen."),
+            ("es", "¿Borrar este chat con todo su historial? No se puede deshacer."),
+        ])
+        .add("ai_host_del_confirm", &[
+            ("en", "Delete this host? Chats built on it will stop working."),
+            ("ru", "Удалить этот хост? Чаты на нём перестанут работать."),
+            ("uk", "Видалити цей хост? Чати на ньому перестануть працювати."),
+            ("de", "Diesen Host löschen? Darauf aufgebaute Chats funktionieren dann nicht mehr."),
+            ("es", "¿Eliminar este host? Los chats que lo usan dejarán de funcionar."),
+        ])
+        .add("ai_chat_pick_model", &[
+            ("en", "Pick a new model for this chat - the history stays."),
+            ("ru", "Выбери новую модель для этого чата - история останется."),
+            ("uk", "Обери нову модель для цього чату - історія залишиться."),
+            ("de", "Wähle ein neues Modell für diesen Chat - der Verlauf bleibt erhalten."),
+            ("es", "Elige un nuevo modelo para este chat - el historial se conserva."),
+        ])
+        .add("ai_host_manage_insecure_on", &[
+            ("en", "\u{26A0}\u{FE0F} Self-signed certificate accepted."),
+            ("ru", "\u{26A0}\u{FE0F} Самоподписанный сертификат принимается."),
+            ("uk", "\u{26A0}\u{FE0F} Самопідписаний сертифікат приймається."),
+            ("de", "\u{26A0}\u{FE0F} Selbstsigniertes Zertifikat wird akzeptiert."),
+            ("es", "\u{26A0}\u{FE0F} Se acepta el certificado autofirmado."),
+        ])
+        .add("ai_host_manage_insecure_off", &[
+            ("en", "Strict certificate checks."),
+            ("ru", "Строгая проверка сертификата."),
+            ("uk", "Сувора перевірка сертифіката."),
+            ("de", "Strikte Zertifikatsprüfung."),
+            ("es", "Verificación estricta de certificados."),
+        ])
+        .add("ai_gen_btn", &[
+            ("en", "\u{1F3A8} Generation"),
+            ("ru", "\u{1F3A8} Генерация"),
+            ("uk", "\u{1F3A8} Генерація"),
+            ("de", "\u{1F3A8} Generierung"),
+            ("es", "\u{1F3A8} Generación"),
+        ])
+        .add("ai_gen_pick", &[
+            ("en", "Which model should handle {}? Auto lets the bot decide."),
+            ("ru", "Какая модель займётся: {}? Авто - бот решит сам."),
+            ("uk", "Яка модель займеться: {}? Авто - бот вирішить сам."),
+            ("de", "Welches Modell soll {} übernehmen? Auto lässt den Bot entscheiden."),
+            ("es", "¿Qué modelo se encarga de {}? Auto deja decidir al bot."),
+        ])
+        .add("ai_gen_no_candidates", &[
+            ("en", "No capable model in reach right now - `/ai model tag` helps when a name gives nothing away."),
+            ("ru", "Подходящих моделей сейчас нет - если имя ни о чём не говорит, поможет `/ai model tag`."),
+            ("uk", "Відповідних моделей зараз немає - якщо ім'я ні про що не каже, допоможе `/ai model tag`."),
+            ("de", "Gerade ist kein passendes Modell erreichbar - `/ai model tag` hilft, wenn der Name nichts verrät."),
+            ("es", "Ahora mismo no hay ningún modelo capaz - `/ai model tag` ayuda si el nombre no dice nada."),
+        ])
+        .add("ai_btn_use", &[
+            ("en", "\u{25B6}\u{FE0F} Use"),
+            ("ru", "\u{25B6}\u{FE0F} Использовать"),
+            ("uk", "\u{25B6}\u{FE0F} Використати"),
+            ("de", "\u{25B6}\u{FE0F} Verwenden"),
+            ("es", "\u{25B6}\u{FE0F} Usar"),
+        ])
+        .add("ai_btn_change_model", &[
+            ("en", "\u{1F504} Change model"),
+            ("ru", "\u{1F504} Сменить модель"),
+            ("uk", "\u{1F504} Змінити модель"),
+            ("de", "\u{1F504} Modell wechseln"),
+            ("es", "\u{1F504} Cambiar modelo"),
+        ])
+        .add("ai_btn_delete", &[
+            ("en", "\u{1F5D1} Delete"),
+            ("ru", "\u{1F5D1} Удалить"),
+            ("uk", "\u{1F5D1} Видалити"),
+            ("de", "\u{1F5D1} Löschen"),
+            ("es", "\u{1F5D1} Eliminar"),
+        ])
+        .add("ai_btn_del_yes", &[
+            ("en", "\u{2757} Yes, delete"),
+            ("ru", "\u{2757} Да, удалить"),
+            ("uk", "\u{2757} Так, видалити"),
+            ("de", "\u{2757} Ja, löschen"),
+            ("es", "\u{2757} Sí, eliminar"),
+        ])
+        .add("ai_btn_del_no", &[
+            ("en", "Cancel"),
+            ("ru", "Отмена"),
+            ("uk", "Скасувати"),
+            ("de", "Abbrechen"),
+            ("es", "Cancelar"),
+        ])
+        .add("ai_btn_back", &[
+            ("en", "\u{2B05}\u{FE0F} Back"),
+            ("ru", "\u{2B05}\u{FE0F} Назад"),
+            ("uk", "\u{2B05}\u{FE0F} Назад"),
+            ("de", "\u{2B05}\u{FE0F} Zurück"),
+            ("es", "\u{2B05}\u{FE0F} Atrás"),
+        ])
+        .add("ai_btn_refresh", &[
+            ("en", "\u{1F504} Refresh models"),
+            ("ru", "\u{1F504} Обновить модели"),
+            ("uk", "\u{1F504} Оновити моделі"),
+            ("de", "\u{1F504} Modelle aktualisieren"),
+            ("es", "\u{1F504} Actualizar modelos"),
+        ])
+        .add("ai_btn_insecure_on", &[
+            ("en", "\u{1F513} Allow self-signed cert"),
+            ("ru", "\u{1F513} Разрешить самоподписанный сертификат"),
+            ("uk", "\u{1F513} Дозволити самопідписаний сертифікат"),
+            ("de", "\u{1F513} Selbstsigniertes Zertifikat erlauben"),
+            ("es", "\u{1F513} Permitir certificado autofirmado"),
+        ])
+        .add("ai_btn_insecure_off", &[
+            ("en", "\u{1F512} Strict cert checks"),
+            ("ru", "\u{1F512} Строгая проверка сертификата"),
+            ("uk", "\u{1F512} Сувора перевірка сертифіката"),
+            ("de", "\u{1F512} Strikte Zertifikatsprüfung"),
+            ("es", "\u{1F512} Verificación estricta"),
+        ])
+        .add("ai_btn_auto", &[
+            ("en", "\u{2728} Auto"),
+            ("ru", "\u{2728} Авто"),
+            ("uk", "\u{2728} Авто"),
+            ("de", "\u{2728} Auto"),
+            ("es", "\u{2728} Auto"),
+        ])
+        .add("ai_btn_check", &[
+            ("en", "\u{1FA7A} Check a model"),
+            ("ru", "\u{1FA7A} Проверить модель"),
+            ("uk", "\u{1FA7A} Перевірити модель"),
+            ("de", "\u{1FA7A} Modell prüfen"),
+            ("es", "\u{1FA7A} Comprobar un modelo"),
         ])
 }
 
