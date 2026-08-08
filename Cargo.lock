@@ -543,9 +543,9 @@ dependencies = [
 
 [[package]]
 name = "foukoapi"
-version = "0.1.2-alpha.1"
+version = "0.1.2-alpha.2"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "f1ebfaeda0ea3e8b44edc9da2ee0317416f031e1ae8ed5af1b9927d2de52a41f"
+checksum = "e2152e2c84e913aee172c819ace42bb798cd8e8c3f1a448d092fbaf944165c6d"
 dependencies = [
  "aes-gcm",
  "async-trait",
@@ -569,7 +569,7 @@ dependencies = [
 
 [[package]]
 name = "foukobot"
-version = "0.1.2-alpha.1"
+version = "0.1.2-alpha.2"
 dependencies = [
  "anyhow",
  "axum",

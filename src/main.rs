@@ -46,6 +46,14 @@ async fn main() -> anyhow::Result<()> {
     // would flush and close the log writer.
     let _log_guard = init_logging();
 
+    // bootstrap_env ran before logging existed - if it tripped over a bad
+    // .env line back then, repeat the warning where it can actually be
+    // seen (journal, log file). Half-loaded config is a nasty failure
+    // mode: tokens above the bad line work, everything below vanishes.
+    if let Some(e) = foukoapi::env_file_error() {
+        tracing::warn!("{e}");
+    }
+
     // --- Storage ------------------------------------------------------------
     // Auto-creates the SQLite file if FOUKO_DB is sqlite:..., falls back to
     // in-memory if the variable is missing. Storage, accounts and the
